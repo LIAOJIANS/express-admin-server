@@ -2,7 +2,7 @@ const mysql = require('mysql')
 
 const config = require('./index')
 
-const { debug } = require('../utils/constant')
+const {debug} = require('../utils/constant')
 
 function connect() {
   return mysql.createConnection({
@@ -17,7 +17,7 @@ function querySql(sql) {
   return new Promise((resolve, reject) => {
     try {
       conn.query(sql, (err, reuslt) => {
-        if(err) {
+        if (err) {
           debug && console.log('查询失败' + JSON.stringify(err))
         } else {
           debug && console.log('查询成功' + JSON.stringify(reuslt))
@@ -32,6 +32,21 @@ function querySql(sql) {
   })
 }
 
+function queryOne(sql) {
+  return new Promise((resolve, reject) => {
+    querySql(sql).then(result => {
+      if (result && result.length > 0) {
+        resolve(result[0])
+      } else {
+        resolve(null)
+      }
+    }).catch(err => {
+      reject(err)
+    })
+  })
+}
+
 module.exports = {
-  querySql
+  querySql,
+  queryOne
 }

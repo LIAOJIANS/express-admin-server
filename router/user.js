@@ -2,12 +2,25 @@ const express = require('express')
 const router = express.Router()
 const { body, validationResult } = require('express-validator')
 const boom = require('boom')
+const jwt = require('jsonwebtoken')
 
 const Result = require('../model/Result')
-const { login } = require('../servers/user')
-const { md5 } = require('../utils/index')
-const { PWD_SALT } = require('../utils/constant')
+const { login, findUser } = require('../servers/user')
+const { md5, decoded } = require('../utils/index')
+const { PWD_SALT, JWT_EXPIRED, PRIVATE_KEY } = require('../utils/constant')
 
+router.get('/info', (req, res) => {
+  const decode = decoded(req)
+  if(decode && decode.username) {
+    findUser(decode.username).then(user => {
+      if(!user) return new Result('查询失败').fail(res)
+      user.roles = [user.role]
+      new Result(user,'用户信息查询成功').success(res)
+    }).catch(err => {
+      new Result('查询失败').fail(res)
+    })
+  }
+})
 
 router.post('/login',[
   body('password').isLength({ min: 5 }).withMessage('密码长度太低'),
@@ -24,7 +37,12 @@ router.post('/login',[
       if(!user || user.length === 0) {
         new Result('登录失败').fail(res)
       } else {
-        new Result('登录成功').success(res)
+        const token = jwt.sign(
+          { username },
+          PRIVATE_KEY,
+          { expiresIn: JWT_EXPIRED }
+        )
+        new Result({ token },'登录成功').success(res)
       }
     })
   }
