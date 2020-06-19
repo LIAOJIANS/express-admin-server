@@ -1,3 +1,6 @@
+const { env } = require('./env')
+
+const UPLOAD_PATH = env === 'dev' ? 'Users/sam/upload/admin-upload-ebook' : '/root/upload/admin-upload/ebook'
 
 module.exports = {
   CODE_ERROR: -1,
@@ -6,5 +9,6 @@ module.exports = {
   PWD_SALT: 'admin_imooc_node',
   PRIVATE_KEY: 'admin_imooc_node_shan',
   JWT_EXPIRED: 60 * 60, // TOKEN 失效时间
-  CODE_TOKEN_ERROR: -2
+  CODE_TOKEN_ERROR: -2,
+  UPLOAD_PATH
 }

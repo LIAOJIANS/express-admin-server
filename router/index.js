@@ -1,6 +1,7 @@
 const express = require('express')
 const boom = require('boom')
 const userRouter = require('./user')
+const bookRouter = require('./book')
 
 const {
   CODE_ERROR
@@ -11,11 +12,8 @@ const Result = require('../model/Result')
 const router = express.Router()
 router.use(jwtAuth)
 
-router.get('/', function (req, res) {
-    res.send('Wellcome')
-})
-
 router.use('/user',userRouter)
+router.use('/book',bookRouter)
 
 router.use((req, res, next) => {
   next(boom.notFound('接口不存在'))
